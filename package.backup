@@ -1,0 +1,46 @@
+{
+    "name": "home-service-chatbot",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "voice:dev": "tsx lib/voice/sip-agent-worker.ts dev",
+        "voice:start": "tsx lib/voice/sip-agent-worker.ts start"
+    },
+    "dependencies": {
+        "@deepgram/sdk": "^4.11.2",
+        "@elevenlabs/elevenlabs-js": "^2.24.0",
+        "@livekit/agents": "^1.0.18",
+        "@livekit/components-react": "^2.9.15",
+        "@livekit/rtc-node": "^0.13.21",
+        "@supabase/supabase-js": "^2.38.4",
+        "axios": "^1.6.2",
+        "dotenv": "^17.2.3",
+        "livekit-client": "^2.15.15",
+        "livekit-server-sdk": "^2.14.0",
+        "lucide-react": "^0.294.0",
+        "next": "14.0.4",
+        "openai": "^4.104.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "uuid": "^9.0.1",
+        "winston": "^3.11.0",
+        "zod": "^3.22.4"
+    },
+    "devDependencies": {
+        "@types/node": "^20.10.4",
+        "@types/react": "^18.2.42",
+        "@types/react-dom": "^18.2.17",
+        "@types/uuid": "^9.0.7",
+        "autoprefixer": "^10.4.16",
+        "eslint": "^8.55.0",
+        "eslint-config-next": "14.0.4",
+        "postcss": "^8.4.32",
+        "tailwindcss": "^3.3.6",
+        "tsx": "^4.20.6",
+        "typescript": "^5.3.3"
+    }
+}
