@@ -1,43 +1,50 @@
-/**
- * Winston Logger Configuration
- */
+type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
-import winston from 'winston';
-import { env } from '../config/environment';
+class Logger {
+    private level: LogLevel;
 
-const logFormat = winston.format.combine(
-    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    winston.format.errors({ stack: true }),
-    winston.format.splat(),
-    winston.format.json()
-);
+    constructor() {
+        this.level = (process.env.LOG_LEVEL as LogLevel) || 'info';
+    }
 
-export const logger = winston.createLogger({
-    level: env.LOG_LEVEL,
-    format: logFormat,
-    defaultMeta: { service: 'home-service-chatbot' },
-    transports: [
-        new winston.transports.File({
-            filename: 'logs/error.log',
-            level: 'error',
-            maxsize: 5242880,
-            maxFiles: 5,
-        }),
-        new winston.transports.File({
-            filename: 'logs/combined.log',
-            maxsize: 5242880,
-            maxFiles: 5,
-        }),
-    ],
-});
+    private shouldLog(level: LogLevel): boolean {
+        const levels: LogLevel[] = ['debug', 'info', 'warn', 'error'];
+        return levels.indexOf(level) >= levels.indexOf(this.level);
+    }
 
-if (env.NODE_ENV !== 'production') {
-    logger.add(new winston.transports.Console({
-        format: winston.format.combine(
-            winston.format.colorize(),
-            winston.format.simple()
-        ),
-    }));
+    private formatMessage(level: LogLevel, message: string, meta?: any): string {
+        const timestamp = new Date().toISOString();
+        const metaStr = meta ? ` ${JSON.stringify(meta)}` : '';
+        return `[${timestamp}] [${level.toUpperCase()}] ${message}${metaStr}`;
+    }
+
+    debug(message: string, meta?: any): void {
+        if (this.shouldLog('debug')) {
+            console.debug(this.formatMessage('debug', message, meta));
+        }
+    }
+
+    info(message: string, meta?: any): void {
+        if (this.shouldLog('info')) {
+            console.log(this.formatMessage('info', message, meta));
+        }
+    }
+
+    warn(message: string, meta?: any): void {
+        if (this.shouldLog('warn')) {
+            console.warn(this.formatMessage('warn', message, meta));
+        }
+    }
+
+    error(message: string, error?: any): void {
+        if (this.shouldLog('error')) {
+            const errorInfo = error instanceof Error
+                ? { message: error.message, stack: error.stack }
+                : error;
+            console.error(this.formatMessage('error', message, errorInfo));
+        }
+    }
 }
 
+export const logger = new Logger();
 export default logger;
