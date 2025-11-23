@@ -38,7 +38,16 @@ app.use(requestLogger);
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+// Root route
+app.get('/', (req, res) => {
+    res.json({ status: 'ok', message: 'Backend API is running' });
+});
+
 // Routes
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok' });
+});
+
 app.use('/api/health', healthRouter);
 app.use('/api/session', sessionRouter);
 app.use('/api/chat', chatRouter);
@@ -46,11 +55,6 @@ app.use('/api/examples', examplesRouter);
 app.use('/api/booking', bookingRouter);
 app.use('/api/video', videoRouter);
 app.use('/api/webhook', webhookRouter);
-
-// Root health check
-app.get('/', (req, res) => {
-    res.json({ status: 'ok', message: 'Backend API running' });
-});
 
 // 404 handler
 app.use((req, res) => {
@@ -63,5 +67,5 @@ app.use((req, res) => {
 // Error handler
 app.use(errorHandler);
 
-// Export for Vercel
+// Export for Vercel serverless
 export default app;
