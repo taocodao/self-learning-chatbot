@@ -23,7 +23,7 @@ class Logger {
 
     private formatMessage(level: LogLevel, message: string, meta?: LogMetadata): string {
         const timestamp = new Date().toISOString();
-        const metaStr = meta ? ` ${JSON.stringify(meta, null, 2)}` : '';
+        const metaStr = meta ? ` ${JSON.stringify(meta)}` : '';
         return `[${timestamp}] [${level.toUpperCase()}] ${message}${metaStr}`;
     }
 
@@ -45,17 +45,15 @@ class Logger {
         }
     }
 
-    error(message: string, error?: any): void {
+    error(message: string, meta?: any): void {
         if (this.shouldLog('error')) {
-            // Fix: Avoid property name conflict
-            const errorInfo = error instanceof Error
+            const errorInfo = meta instanceof Error
                 ? {
-                    errorMessage: error.message,
-                    stack: error.stack,
-                    name: error.name,
-                    ...(error && { cause: error })
+                    message: meta.message,
+                    stack: meta.stack,
+                    name: meta.name,
                 }
-                : error;
+                : meta;
 
             console.error(this.formatMessage('error', message, errorInfo));
         }
