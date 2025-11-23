@@ -97,8 +97,10 @@ async function handleIncomingMessage(
             id: messageId,
         });
 
-        // Mark as read
-        await whatsappService.markAsRead(messageId);
+        // Mark as read (only if messageId exists)
+        if (messageId) {
+            await whatsappService.markAsRead(messageId);
+        }
 
         // ==========================================
         // HANDLE SESSION INITIATION
