@@ -2,7 +2,7 @@ export interface Message {
     id: string;
     sessionId: string;
     content: string;
-    role: 'user' | 'assistant';
+    role?: 'user' | 'assistant';
     sender: 'user' | 'bot';
     timestamp: Date;
     type: 'text' | 'image' | 'audio';
@@ -18,15 +18,15 @@ export interface Conversation {
 }
 
 export interface LearningData {
-    id: string;
+    id?: string;
     query: string;
     response: string;
-    input: string;
-    output: string;
+    input?: string;
+    output?: string;
     feedback?: string;
     context?: any;
     confidence: number;
-    createdAt: Date;
+    createdAt?: Date;
 }
 
 export interface ApiResponse<T = any> {
@@ -38,10 +38,10 @@ export interface ApiResponse<T = any> {
 
 export interface WhatsAppMessage {
     from: string;
-    to: string;
+    to?: string;
     text: { body: string };
     type: string;
-    id: string;
+    id?: string;
     image?: any;
     video?: any;
     interactive?: any;
