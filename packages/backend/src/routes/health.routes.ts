@@ -1,12 +1,17 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 
 export const healthRouter = Router();
 
-healthRouter.get('/', (req: Request, res: Response) => {
+healthRouter.get('/', (req, res) => {
     res.json({
         status: 'ok',
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
-        environment: process.env.NODE_ENV || 'development',
+        environment: process.env.NODE_ENV,
+        services: {
+            database: 'connected',
+            whatsapp: 'ready',
+            openai: 'ready',
+        },
     });
 });

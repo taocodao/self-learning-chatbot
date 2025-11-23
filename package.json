@@ -6,16 +6,24 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "dev:frontend": "npm run dev --workspace=packages/frontend",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "npm run dev --workspace=packages/backend",
-    "build": "npm run build --workspaces",
-    "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
+    "dev:frontend": "npm run dev --workspace=packages/frontend",
+    "build": "npm run build --workspace=packages/backend",
+    "start": "npm run start --workspace=packages/backend",
+    "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
-    "db:setup": "node scripts/setup-database.js"
+    "db:schema": "node scripts/apply-schema.js"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.84.0",
+    "axios": "^1.13.2",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "openai": "^6.9.1"
   }
 }

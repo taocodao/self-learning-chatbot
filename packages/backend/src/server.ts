@@ -6,18 +6,20 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 
 // Import shared utilities
-import { supabase } from '../../../lib/config/database';
-import { logger } from '../../../lib/utils/logger';
+import { supabase } from './lib/config/database';
+import logger from './lib/utils/logger';
+
 
 // Import routes
 import { chatRouter } from './routes/chat.routes';
-import { webhookRouter } from './routes/webhook.routes';
+import { webhookRouter } from './routes/whatsapp.routes';
 import { sessionRouter } from './routes/session.routes';
 import { examplesRouter } from './routes/examples.routes';
 import { healthRouter } from './routes/health.routes';
+import { bookingRouter } from './routes/booking.routes';
+import { videoRouter } from './routes/video.routes';
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler';
@@ -26,7 +28,7 @@ import { requestLogger } from './middleware/requestLogger';
 // Import types
 import type { ApiResponse } from './types';
 
-// Load environment variables from root
+// Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 interface ServerConfig {
@@ -83,8 +85,8 @@ class Server {
         this.app.use(requestLogger);
 
         // Body parsing
-        this.app.use(express.json());
-        this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(express.json({ limit: '50mb' }));
+        this.app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
         // Make io and supabase accessible in routes
         this.app.set('io', this.io);
@@ -95,20 +97,15 @@ class Server {
         // Health check
         this.app.use('/health', healthRouter);
 
-        // Session management
+        // API routes
         this.app.use('/api/session', sessionRouter);
-
-        // Chat routes
         this.app.use('/api/chat', chatRouter);
-
-        // Examples (RAG knowledge base)
         this.app.use('/api/examples', examplesRouter);
+        this.app.use('/api/booking', bookingRouter);
+        this.app.use('/api/video', videoRouter);
 
         // WhatsApp webhook
         this.app.use('/webhook', webhookRouter);
-
-        // WhatsApp initialization endpoint (legacy support)
-        this.app.post('/api/whatsapp/init', this.handleWhatsAppInit.bind(this));
 
         // 404 handler
         this.app.use((req: Request, res: Response) => {
@@ -117,38 +114,6 @@ class Server {
                 error: 'Endpoint not found',
             } as ApiResponse);
         });
-    }
-
-    private async handleWhatsAppInit(req: Request, res: Response): Promise<void> {
-        try {
-            const { userId, sessionId } = req.body;
-
-            if (!userId && !sessionId) {
-                res.status(400).json({
-                    success: false,
-                    error: 'userId or sessionId is required',
-                } as ApiResponse);
-                return;
-            }
-
-            const finalSessionId = sessionId || userId;
-
-            res.json({
-                success: true,
-                data: {
-                    phoneNumber: this.config.whatsappPhoneId,
-                    sessionId: finalSessionId,
-                    apiEndpoint: '/api/chat',
-                    webhookEndpoint: '/webhook',
-                },
-            } as ApiResponse);
-        } catch (error) {
-            logger.error('Error initializing WhatsApp', error);
-            res.status(500).json({
-                success: false,
-                error: 'Failed to initialize WhatsApp',
-            } as ApiResponse);
-        }
     }
 
     private setupWebSocket(): void {
@@ -160,15 +125,8 @@ class Server {
             if (sessionId) {
                 socket.join(sessionId);
                 logger.info(`Client joined session: ${sessionId}`);
-
-                // Notify other clients in the room
-                socket.to(sessionId).emit('user_joined', {
-                    socketId: socket.id,
-                    timestamp: new Date().toISOString(),
-                });
             }
 
-            // Handle typing indicator
             socket.on('typing', (data: { sessionId: string }) => {
                 if (data.sessionId) {
                     socket.to(data.sessionId).emit('user_typing', {
@@ -178,7 +136,6 @@ class Server {
                 }
             });
 
-            // Handle stop typing
             socket.on('stop_typing', (data: { sessionId: string }) => {
                 if (data.sessionId) {
                     socket.to(data.sessionId).emit('user_stop_typing', {
@@ -187,23 +144,8 @@ class Server {
                 }
             });
 
-            // Handle message acknowledgment
-            socket.on('message_received', (data: { messageId: string; sessionId: string }) => {
-                socket.to(data.sessionId).emit('message_ack', {
-                    messageId: data.messageId,
-                    timestamp: new Date().toISOString(),
-                });
-            });
-
-            // Handle disconnect
             socket.on('disconnect', () => {
                 logger.info(`WebSocket client disconnected: ${socket.id}`);
-                if (sessionId) {
-                    socket.to(sessionId).emit('user_left', {
-                        socketId: socket.id,
-                        timestamp: new Date().toISOString(),
-                    });
-                }
             });
         });
 
@@ -213,18 +155,15 @@ class Server {
     private setupErrorHandling(): void {
         this.app.use(errorHandler);
 
-        // Handle unhandled promise rejections
         process.on('unhandledRejection', (reason, promise) => {
             logger.error('Unhandled Rejection at:', { promise, reason });
         });
 
-        // Handle uncaught exceptions
         process.on('uncaughtException', (error) => {
             logger.error('Uncaught Exception:', error);
             process.exit(1);
         });
 
-        // Graceful shutdown
         process.on('SIGTERM', () => {
             logger.info('SIGTERM received, shutting down gracefully...');
             this.httpServer.close(() => {
@@ -242,7 +181,7 @@ class Server {
                 .select('count')
                 .limit(1);
 
-            if (error && error.code !== 'PGRST116') { // Ignore "no rows" error
+            if (error && error.code !== 'PGRST116') {
                 throw error;
             }
 
@@ -254,7 +193,7 @@ class Server {
                 logger.info(`✓ Environment: ${this.config.nodeEnv}`);
                 logger.info(`✓ Frontend URL: ${this.config.frontendUrl}`);
                 logger.info(`✓ WebSocket server ready`);
-                logger.info(`✓ API endpoints available at http://localhost:${this.config.port}/api`);
+                logger.info(`✓ Self-learning chatbot initialized`);
             });
         } catch (error) {
             logger.error('Failed to start server:', error);
@@ -262,7 +201,6 @@ class Server {
         }
     }
 
-    // Public method to get Socket.IO instance
     public getIO(): SocketIOServer {
         return this.io;
     }

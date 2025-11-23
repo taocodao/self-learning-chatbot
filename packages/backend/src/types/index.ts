@@ -13,6 +13,7 @@ export interface ApiResponse<T = any> {
 export interface Session {
     id: string;
     userId: string;
+    businessSlug?: string;
     barcodeData: string;
     platform: 'web' | 'whatsapp' | 'mobile';
     phoneNumber?: string;
@@ -33,15 +34,108 @@ export interface ChatMessage {
     feedbackRating?: number;
     feedbackHelpful?: boolean;
     feedbackComment?: string;
+    metadata?: Record<string, any>;
 }
 
-export interface WebSocketEvents {
-    typing: { sessionId: string };
-    stop_typing: { sessionId: string };
-    message_received: { messageId: string; sessionId: string };
-    user_joined: { socketId: string; timestamp: string };
-    user_left: { socketId: string; timestamp: string };
-    user_typing: { socketId: string; timestamp: string };
-    user_stop_typing: { socketId: string };
-    message_ack: { messageId: string; timestamp: string };
+export interface Example {
+    id: string;
+    question: string;
+    answer: string;
+    category: string;
+    language: string;
+    embedding?: number[];
+    source: 'manual' | 'perplexity' | 'learning';
+    usageCount: number;
+    successRate: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+// Add this: Extended type for examples with similarity scores
+export interface ExampleWithSimilarity extends Example {
+    similarity: number;
+}
+
+export interface Booking {
+    id: string;
+    customerId: string;
+    businessId: string;
+    serviceType: string;
+    scheduledDate: string;
+    scheduledTime: string;
+    numberOfPeople: number;
+    confirmationCode: string;
+    status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+    depositAmount?: number;
+    depositPaid: boolean;
+    createdAt: string;
+}
+
+export interface VideoUpload {
+    id: string;
+    customerId: string;
+    businessId?: string;
+    originalFilename: string;
+    fileSize: number;
+    storagePath: string;
+    thumbnailPath?: string;
+    status: 'uploading' | 'processing' | 'analyzed' | 'failed';
+    analysisResult?: VideoAnalysisResult;
+    uploadedAt: string;
+    processedAt?: string;
+}
+
+export interface VideoAnalysisResult {
+    problemType: string;
+    severity: 'minor' | 'moderate' | 'major' | 'emergency';
+    description: string;
+    detectedObjects: string[];
+    suggestedActions: string[];
+    estimatedCost: {
+        min: number;
+        max: number;
+        currency: string;
+    };
+    estimatedDuration: string;
+    requiredExpertise: string[];
+    urgency: 'low' | 'medium' | 'high';
+}
+
+export interface WhatsAppMessage {
+    from: string;
+    id: string;
+    timestamp: string;
+    type: 'text' | 'image' | 'video' | 'audio' | 'document' | 'button' | 'interactive';
+    text?: {
+        body: string;
+    };
+    image?: {
+        id: string;
+        mime_type: string;
+        caption?: string;
+    };
+    video?: {
+        id: string;
+        mime_type: string;
+        caption?: string;
+    };
+    audio?: {
+        id: string;
+        mime_type: string;
+    };
+    button?: {
+        text: string;
+        payload: string;
+    };
+    interactive?: {
+        type: string;
+        button_reply?: {
+            id: string;
+            title: string;
+        };
+        list_reply?: {
+            id: string;
+            title: string;
+        };
+    };
 }

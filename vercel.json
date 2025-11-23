@@ -1,0 +1,22 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "packages/backend/src/server.ts",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/webhook",
+            "dest": "packages/backend/src/server.ts"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "packages/backend/src/server.ts"
+        }
+    ],
+    "env": {
+        "NODE_ENV": "production"
+    }
+}

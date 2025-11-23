@@ -17,6 +17,7 @@ export function requestLogger(
             statusCode: res.statusCode,
             duration: `${duration}ms`,
             ip: req.ip,
+            userAgent: req.get('user-agent'),
         });
     });
 
