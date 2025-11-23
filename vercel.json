@@ -8,15 +8,9 @@
     ],
     "routes": [
         {
-            "src": "/webhook",
-            "dest": "packages/backend/src/server.ts"
-        },
-        {
             "src": "/(.*)",
             "dest": "packages/backend/src/server.ts"
         }
     ],
-    "env": {
-        "NODE_ENV": "production"
-    }
+    "outputDirectory": "packages/backend/dist"
 }
