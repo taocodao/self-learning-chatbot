@@ -1,7 +1,7 @@
-node_modules
-.env
+﻿node_modules
+packages/frontend
+packages/ai-service
+scripts
 .env.local
-.git
-dist
+.env.*.local
 *.log
-.DS_Store
