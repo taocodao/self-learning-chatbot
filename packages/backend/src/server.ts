@@ -206,9 +206,12 @@ class Server {
     }
 }
 
-// Start server
-const server = new Server();
-server.start();
+// At the end of server.ts, change to:
+if (process.env.NODE_ENV !== 'production') {
+    const server = new Server();
+    server.start();
+}
 
 export default Server;
-export { server };
+
+//export { server };
