@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { logger } from '../../../../lib/utils/logger';
+import { logger } from '../lib/utils/logger';
 
 export const webhookRouter = Router();
 
