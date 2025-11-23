@@ -1,6 +1,7 @@
 {
   "version": 2,
   "rewrites": [
+    { "source": "/", "destination": "/api" },
     { "source": "/health", "destination": "/api" },
     { "source": "/webhook", "destination": "/api" },
     { "source": "/api/health", "destination": "/api" },
