@@ -1,7 +1,7 @@
 {
     "version": 2,
-    "buildCommand": "npm install --workspaces && npm run build",
-    "installCommand": "npm install --workspaces",
+    "buildCommand": "cd packages/backend && npm install && npm run build",
+    "installCommand": "npm install",
     "outputDirectory": "packages/backend/dist",
     "builds": [
         {
