@@ -41,7 +41,7 @@ export interface WhatsAppMessage {
     to?: string;
     text: { body: string };
     type: string;
-    id: string;
+    id?: string;
     image?: any;
     video?: any;
     interactive?: any;
