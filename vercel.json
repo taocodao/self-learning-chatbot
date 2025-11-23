@@ -1,16 +1,18 @@
 {
     "version": 2,
+    "buildCommand": "npm run build",
+    "installCommand": "npm install",
+    "outputDirectory": "packages/backend/dist",
     "builds": [
         {
-            "src": "packages/backend/src/server.ts",
+            "src": "packages/backend/dist/server.js",
             "use": "@vercel/node"
         }
     ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "packages/backend/src/server.ts"
+            "dest": "packages/backend/dist/server.js"
         }
-    ],
-    "outputDirectory": "packages/backend/dist"
+    ]
 }
