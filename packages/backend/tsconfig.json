@@ -6,7 +6,7 @@
             "ES2020"
         ],
         "outDir": "./dist",
-        "rootDir": "./src",
+        "rootDir": ".",
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
@@ -20,6 +20,9 @@
         "paths": {
             "@/*": [
                 "src/*"
+            ],
+            "@lib/*": [
+                "../../lib/*"
             ]
         },
         "types": [
@@ -31,7 +34,8 @@
         ]
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "../../lib/**/*"
     ],
     "exclude": [
         "node_modules",
