@@ -1,4 +1,11 @@
+# Ignore the entire monorepo structure
 packages/
+workspaces/
+# Ignore root workspace files
+package.json
+package-lock.json
+tsconfig.json
+# Standard ignores
 node_modules/
 .git/
 *.log
@@ -6,3 +13,4 @@ node_modules/
 .env.local
 dist/
 build/
+.next/
