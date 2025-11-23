@@ -25,7 +25,7 @@ export interface LearningData {
     output: string;
     feedback?: string;
     context?: any;
-    confidence?: number;
+    confidence: number;
     createdAt: Date;
 }
 
@@ -39,8 +39,12 @@ export interface ApiResponse<T = any> {
 export interface WhatsAppMessage {
     from: string;
     to: string;
-    text: string;
+    text: { body: string };
     type: string;
+    id: string;
+    image?: any;
+    video?: any;
+    interactive?: any;
 }
 
 export interface ChatMessage {
@@ -52,6 +56,8 @@ export interface Example {
     id: string;
     input: string;
     output: string;
+    question: string;
+    answer: string;
     embedding?: number[];
 }
 
