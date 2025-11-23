@@ -1,7 +1,8 @@
-﻿node_modules
-packages/frontend
-packages/ai-service
-scripts
-.env.local
-.env.*.local
+packages/
+node_modules/
+.git/
 *.log
+.env
+.env.local
+dist/
+build/
